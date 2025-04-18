@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+enum Category {
+  Paper
+  Glass
+  Metal
+  Plastic
+  E_Waste
+  Brass
+  PET_bottle
+  Others
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  full_name        String?
+  password         String
+  confirm_password String
+  // profile_picture   String
+  // username          String?
+  is_verified      Boolean   @default(false)
+  updated_at       DateTime?
+  created_at       DateTime?
+  Garbage          Garbage[] @relation("GarbageUser")
+}
+
+model Garbage {
+  id           Int      @id @default(autoincrement())
+  pickup_date  DateTime
+  pickup_time  String
+  phone_no     Int
+  alt_phone_no Int?
+  location     String
+  type         String
+  user         User?     @relation("GarbageUser", fields: [fk_user_id], references: [id])
+  fk_user_id   Int? 
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model Admin {
+  id          Int      @id @default(autoincrement())
+  email       String
+  password    String
+  username    String?
+  acc_type    String   @default("Manager")
+  is_verified Boolean? @default(false)
+}
+
+model Works {
+  id           Int     @id @default(autoincrement())
+  banner_image String
+  banner_alt   String?
+  banner_title String
+  banner_desc  String?
+}
+
+model Contact {
+  id      Int    @id @default(autoincrement())
+  email   String
+  subject String
+  message String
+}
+
+model Gprice {
+  id                Int      @id @default(autoincrement())
+  trash_name        String
+  trash_image       String
+  trash_description String?
+  trash_category    Category
+  trash_price       Int
+  trash_unit        String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
